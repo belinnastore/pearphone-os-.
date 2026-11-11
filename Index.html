@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PearPhone OS - Authentic Pear Shape Simulator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #090d16 100%);
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+    }
+    .font-pear { font-family: 'Fredoka One', cursive; }
+
+    /* Custom Pear SVG Path Mask for Screen Layout */
+    .pear-shape-container {
+      width: 360px;
+      height: 700px;
+      position: relative;
+      filter: drop-shadow(0 25px 35px rgba(0,0,0,0.6));
+    }
+
+    /* Color Themes for Pear Body */
+    .theme-lime { --pear-dark: #3f6212; --pear-mid: #65a30d; --pear-light: #bef264; --pear-glow: rgba(163, 230, 53, 0.4); }
+    .theme-pink { --pear-dark: #831843; --pear-mid: #db2777; --pear-light: #fbcfe8; --pear-glow: rgba(244, 114, 182, 0.4); }
+    .theme-purple { --pear-dark: #4c1d95; --pear-mid: #9333ea; --pear-light: #e9d5ff; --pear-glow: rgba(192, 132, 252, 0.4); }
+    .theme-cyan { --pear-dark: #164e63; --pear-mid: #0891b2; --pear-light: #a5f3fc; --pear-glow: rgba(34, 211, 238, 0.4); }
+    .theme-yellow { --pear-dark: #713f12; --pear-mid: #eab308; --pear-light: #fef08a; --pear-glow: rgba(250, 204, 21, 0.4); }
+
+    /* SVG Clip Path applied to HTML Content for perfect screen wrapping */
+    .pear-clip {
+      clip-path: url('#pearPathClip');
+    }
+
+    /* Glass glare on screen */
+    .glass-glare {
+      background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+    }
+
+    /* Custom Scrollbar for Pear Screen */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+    /* Animations */
+    @keyframes floatComment {
+      0% { opacity: 0; transform: translateY(15px) scale(0.95); }
+      15% { opacity: 1; transform: translateY(0) scale(1); }
+      85% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-30px); }
+    }
+    .anim-comment { animation: floatComment 3s ease-out forwards; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 text-slate-100">
+
+  <!-- Header Title -->
+  <header class="text-center my-2">
+    <h1 class="text-3xl md:text-4xl font-pear tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-pink-400 to-cyan-300 drop-shadow-lg">
+      PearPhone OS Simulator
+    </h1>
+    <p class="text-xs text-slate-400">Authentic Pear Shape & Sound FX • iCarly Universe</p>
+  </header>
+
+  <!-- Main Phone Container -->
+  <div id="pearApp" class="pear-shape-container theme-lime transition-all duration-500">
+    
+    <!-- SVG Defs for ClipPath and Pear Silhouette Masks -->
+    <svg class="absolute w-0 h-0" viewBox="0 0 360 700">
+      <defs>
+        <clipPath id="pearPathClip" clipPathUnits="userSpaceOnUse">
+          <!-- Exact Pear Silhouette for Screen Inside (Scaled inset) -->
+          <path d="M 180 32 
+                   C 230 32, 245 70, 242 160 
+                   C 240 230, 270 280, 315 360 
+                   C 355 430, 350 590, 265 655 
+                   C 215 690, 145 690, 95 655 
+                   C 10 590, 5 430, 45 360 
+                   C 90 280, 120 230, 118 160 
+                   C 115 70, 130 32, 180 32 Z" />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <!-- PHYSICAL PEAR BODY SVG (Outer Shell with 3D Shader, Leaf, Stem & Logo) -->
+    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 360 700">
+      <defs>
+        <!-- Pear Body Metallic/Glossy Gradient -->
+        <linearGradient id="pearBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="var(--pear-light)"/>
+          <stop offset="40%" stop-color="var(--pear-mid)"/>
+          <stop offset="100%" stop-color="var(--pear-dark)"/>
+        </linearGradient>
+        <radialGradient id="pearGlowGrad" cx="30%" cy="20%" r="70%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+          <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Bezel Inner Shadow Gradient -->
+        <radialGradient id="screenBezelShade" cx="50%" cy="50%" r="50%">
+          <stop offset="85%" stop-color="#000000" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#000000" stop-opacity="0.8"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Stem on top of Pear -->
+      <path d="M 180 20 C 175 10, 160 5, 155 0 C 165 2, 175 8, 182 18 Z" fill="#5c3d11"/>
+      <path d="M 178 20 Q 172 6, 162 2 Q 170 8, 182 20 Z" fill="#805419"/>
+
+      <!-- Leaf attached to Stem -->
+      <path d="M 178 14 C 195 2, 220 8, 225 22 C 205 25, 188 18, 178 14 Z" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+      <path d="M 180 14 Q 200 15, 223 21" stroke="#86efac" stroke-width="1" fill="none"/>
+
+      <!-- PEAR PHONE HARDWARE OUTER CASING -->
+      <path d="M 180 12 
+               C 245 12, 265 60, 260 160 
+               C 256 235, 290 280, 340 365 
+               C 385 440, 375 620, 280 688 
+               C 225 725, 135 725, 80 688 
+               C -15 620, -25 440, 20 365 
+               C 70 280, 104 235, 100 160 
+               C 95 60, 115 12, 180 12 Z" 
+            fill="url(#pearBodyGrad)" 
+            stroke="var(--pear-light)" 
+            stroke-width="4" />
+
+      <!-- Glossy Reflection Overlay on Outer Body -->
+      <path d="M 180 16 C 240 16, 258 60, 253 155 C 248 230, 280 275, 330 355 C 345 380, 350 410, 345 440 C 330 300, 250 240, 245 140 C 240 60, 220 22, 180 16 Z" 
+            fill="url(#pearGlowGrad)" />
+
+      <!-- TOP SPEAKER / CAMERA HARDWARE ON FRONT BEZEL -->
+      <circle cx="160" cy="24" r="3" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <rect x="172" y="22" width="24" height="4" rx="2" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+
+      <!-- PEAR BITE LOGO ON TOP BEZEL -->
+      <g transform="translate(170, 665) scale(0.7)">
+        <!-- Small Pear Logo with Bite -->
+        <path d="M12,2 C11.5,2 11,2.2 10.6,2.6 C9.2,4 9,6.5 9,8 C6,9 4,11.5 4,15 C4,19 7.5,22 12,22 C16.5,22 20,19 20,15 C20,11.5 18,9 15,8 C15,6.5 14.8,4 13.4,2.6 C13,2.2 12.5,2 12,2 Z" fill="rgba(255,255,255,0.7)"/>
+        <!-- Bite Circle Cutout -->
+        <circle cx="17" cy="12" r="3.5" fill="var(--pear-mid)"/>
+      </g>
+    </svg>
+
+    <!-- PHYSICAL BUTTONS ON LATERAL EDGE -->
+    <!-- Power Button -->
+    <button onclick="togglePower()" class="absolute -right-2 top-36 w-3 h-12 bg-slate-800 rounded-r-md border-l border-slate-600 active:bg-slate-700 z-50 shadow-md" title="Liga/Desliga Tela"></button>
+    <!-- Volume Buttons -->
+    <button onclick="playClickSound(); changeVolume(1)" class="absolute -left-2 top-32 w-3 h-9 bg-slate-800 rounded-l-md border-r border-slate-600 active:bg-slate-700 z-50 shadow-md" title="Aumentar Som"></button>
+    <button onclick="playClickSound(); changeVolume(-1)" class="absolute -left-2 top-44 w-3 h-9 bg-slate-800 rounded-l-md border-r border-slate-600 active:bg-slate-700 z-50 shadow-md" title="Diminuir Som"></button>
+
+    <!-- INNER PEAR DISPLAY SCREEN (Clipped to inner pear path) -->
+    <div id="pearScreen" class="absolute inset-0 pear-clip bg-slate-950 flex flex-col justify-between overflow-hidden z-10 transition-opacity duration-300">
+      
+      <!-- Glass Glare Screen Overlay -->
+      <div class="glass-glare absolute inset-0 z-40"></div>
+
+      <!-- STATUS BAR (Top Narrow Portion of Pear Screen) -->
+      <div id="statusBar" class="h-10 w-full pt-8 px-14 flex justify-between items-center text-[11px] font-bold z-30 text-white drop-shadow">
+        <div class="flex items-center gap-1">
+          <span class="font-pear text-xs tracking-wider text-lime-400">Pear</span>
+          <span class="text-[9px] bg-white/20 px-1 py-0.2 rounded">5G</span>
+        </div>
+        <div id="statusClock">12:00</div>
+        <div class="flex items-center gap-1">
+          <i data-lucide="wifi" class="w-3 h-3"></i>
+          <i data-lucide="battery" class="w-3.5 h-3.5 text-lime-300"></i>
+        </div>
+      </div>
+
+      <!-- 1. LOCK SCREEN OVERLAY -->
+      <div id="lockScreen" class="absolute inset-0 z-30 bg-cover bg-center flex flex-col justify-between items-center pt-16 pb-14 px-8 transition-all duration-500" style="background-image: linear-gradient(to bottom, rgba(15,23,42,0.4), rgba(15,23,42,0.85)), url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop');">
+        
+        <div class="text-center mt-2">
+          <div id="lockTime" class="text-4xl font-pear text-white drop-shadow-md tracking-wider">12:00</div>
+          <div id="lockDate" class="text-[10px] font-medium text-lime-200 mt-0.5 uppercase tracking-widest">Sexta-feira, 14 de Outubro</div>
+        </div>
+
+        <!-- Pear Logo Pulsing on Lock Screen -->
+        <div class="flex flex-col items-center my-auto cursor-pointer" onclick="unlockPhone()">
+          <div class="relative group">
+            <svg class="w-20 h-20 fill-lime-300 drop-shadow-lg transition-transform group-hover:scale-110" viewBox="0 0 24 24">
+              <path d="M12,2 C11.5,2 11,2.2 10.6,2.6 C9.2,4 9,6.5 9,8 C6,9 4,11.5 4,15 C4,19 7.5,22 12,22 C16.5,22 20,19 20,15 C20,11.5 18,9 15,8 C15,6.5 14.8,4 13.4,2.6 C13,2.2 12.5,2 12,2 Z"/>
+            </svg>
+            <!-- Bite -->
+            <div class="absolute top-7 right-3 w-6 h-6 rounded-full bg-slate-900/90"></div>
+          </div>
+          <span class="font-pear text-xs tracking-widest mt-2 text-white/90">PearOS v4.5</span>
+        </div>
+
+        <!-- Unlock Button -->
+        <button onclick="unlockPhone()" class="w-full py-3 bg-white/20 backdrop-blur-md hover:bg-white/30 border border-white/30 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider transition active:scale-95 shadow-lg">
+          <i data-lucide="lock" class="w-4 h-4 text-lime-300"></i>
+          <span>Clique para Desbloquear</span>
+        </button>
+      </div>
+
+      <!-- 2. HOME SCREEN (Grid fitted to wider bulbous screen bottom) -->
+      <div id="homeScreen" class="hidden absolute inset-0 pt-16 pb-12 px-6 flex flex-col justify-between z-20 bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950">
+        
+        <!-- App Grid (Layout configured to narrow top, wide bottom) -->
+        <div class="flex-1 flex flex-col justify-center gap-4 px-2">
+          
+          <!-- Top Row (2 Apps in Narrower Top Screen Area) -->
+          <div class="flex justify-center gap-6">
+            <button onclick="openApp('pearcam')" class="flex flex-col items-center gap-1 group">
+              <div class="w-13 h-13 p-3 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-90 transition border border-white/20">
+                <i data-lucide="camera" class="w-6 h-6 text-white"></i>
+              </div>
+              <span class="text-[10px] font-medium text-slate-200">PearCam</span>
+            </button>
+
+            <button onclick="openApp('soundboard')" class="flex flex-col items-center gap-1 group">
+              <div class="w-13 h-13 p-3 bg-gradient-to-tr from-purple-600 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-90 transition border border-white/20">
+                <i data-lucide="sliders" class="w-6 h-6 text-white"></i>
+              </div>
+              <span class="text-[10px] font-medium text-slate-200">Som Freddie</span>
+            </button>
+          </div>
+
+          <!-- Bottom Grid (3 Apps in Wider Screen Bottom Area) -->
+          <div class="grid grid-cols-3 gap-y-4 gap-x-2 pt-2">
+            <button onclick="openApp('icarly')" class="flex flex-col items-center gap-1 group">
+              <div class="w-13 h-13 p-3 bg-gradient-to-tr from-amber-500 to-orange-400 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-90 transition border border-white/20 relative">
+                <i data-lucide="tv" class="w-6 h-6 text-white"></i>
+                <span class="absolute top-1 right-1 flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              </div>
+              <span class="text-[10px] font-medium text-slate-200">iCarly Live</span>
+            </button>
+
+            <button onclick="openApp('pearstore')" class="flex flex-col items-center gap-1 group">
+              <div class="w-13 h-13 p-3 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-90 transition border border-white/20">
+                <i data-lucide="shopping-bag" class="w-6 h-6 text-white"></i>
+              </div>
+              <span class="text-[10px] font-medium text-slate-200">PearStore</span>
+            </button>
+
+            <button onclick="openApp('settings')" class="flex flex-col items-center gap-1 group">
+              <div class="w-13 h-13 p-3 bg-gradient-to-tr from-slate-600 to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-90 transition border border-white/20">
+                <i data-lucide="settings" class="w-6 h-6 text-white"></i>
+              </div>
+              <span class="text-[10px] font-medium text-slate-200">Ajustes</span>
+            </button>
+          </div>
+        </div>
+
+<!-- Dock Bar at the Bottom -->
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2 flex justify-around items-center border border-white/10 mx-4 mb-3">
+          <button onclick="playClickSound(); alert('PearMessage: Sam te enviou um Taco de Meia! 🌮')" class="p-2 hover:bg-white/10 rounded-xl">
+            <i data-lucide="message-square" class="w-5 h-5 text-lime-300"></i>
+          </button>
+          <button onclick="playClickSound(); alert('Ligando para Spencer Shay... 🎨')" class="p-2 hover:bg-white/10 rounded-xl">
+            <i data-lucide="phone" class="w-5 h-5 text-pink-300"></i>
+          </button>
+          <button onclick="playClickSound(); alert('PearBrowser: Navegando para iCarly.com')" class="p-2 hover:bg-white/10 rounded-xl">
+            <i data-lucide="globe" class="w-5 h-5 text-cyan-300"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. ACTIVE APP CONTAINER (Screen Window) -->
+      <div id="appContainer" class="hidden absolute inset-0 pt-14 pb-12 px-5 bg-slate-950 z-20 flex flex-col justify-between overflow-hidden">
+        
+        <!-- App Header Bar -->
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 px-2">
+          <span id="appTitle" class="font-pear text-sm text-lime-300">App</span>
+          <button onclick="closeApp()" class="p-1 rounded-full bg-slate-800 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Dynamic Content Body -->
+        <div id="appContent" class="flex-1 my-2 overflow-y-auto flex flex-col">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- HOME BAR / PHYSICAL VIRTUAL TOUCH HOME BUTTON -->
+      <div class="h-10 w-full flex items-center justify-center pb-2 z-40 bg-transparent">
+        <button onclick="pressHomeButton()" class="w-14 h-3 bg-white/30 hover:bg-white/50 border border-white/40 rounded-full transition active:scale-95 shadow-inner" title="Home"></button>
+      </div>
+
+    </div> <!-- End Pear Screen -->
+  </div> <!-- End Pear Container -->
+
+  <footer class="mt-4 text-center text-[11px] text-slate-400">
+    Clique na borda para Ligar/Desligar ou Mudar Volume • Universe Nickelodeon
+  </footer>
+
+  <!-- SYSTEM JAVASCRIPT LOGIC -->
+  <script>
+    lucide.createIcons();
+
+    // State Variables
+    let isLocked = true;
+    let isScreenOn = true;
+    let currentApp = null;
+    let webCamStream = null;
+    let commentsInterval = null;
+
+    // Sound Synthesizer (AudioContext)
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+    }
+
+    // Audio FX Functions
+    function playClickSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    function playApplauseSound() {
+      try {
+        initAudio();
+        const bufferSize = audioCtx.sampleRate * 1.2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        const whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1200;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+        whiteNoise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        whiteNoise.start();
+      } catch (e) {}
+    }
+
+    function playAirhornSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(466, audioCtx.currentTime); // Bb4
+        osc.frequency.setValueAtTime(466, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(622, audioCtx.currentTime + 0.15); // Eb5
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } catch(e) {}
+    }
+
+    function playBooSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+      } catch(e) {}
+    }
+
+    function playCountdownSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      } catch(e) {}
+    }
+
+    // System Clock Update
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${hours}:${minutes}`;
+      
+      document.getElementById('statusClock').innerText = timeStr;
+      document.getElementById('lockTime').innerText = timeStr;
+
+      const options = { weekday: 'short', day: 'numeric', month: 'short' };
+      document.getElementById('lockDate').innerText = now.toLocaleDateString('pt-BR', options);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Unlock Screen
+    function unlockPhone() {
+      playClickSound();
+      isLocked = false;
+      document.getElementById('lockScreen').classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('homeScreen').classList.remove('hidden');
+      }, 300);
+    }
+
+    // Power Toggle
+    function togglePower() {
+      playClickSound();
+      const screen = document.getElementById('pearScreen');
+      if (isScreenOn) {
+        screen.style.opacity = '0';
+        isScreenOn = false;
+        stopWebCam();
+      } else {
+        screen.style.opacity = '1';
+        isScreenOn = true;
+      }
+    }
+
+    function changeVolume(dir) {
+      alert(dir > 0 ? '🔊 Volume: 100%' : '🔉 Volume: 50%');
+    }
+
+    // Home Button
+    function pressHomeButton() {
+      playClickSound();
+      if (!isScreenOn) {
+        togglePower();
+        return;
+      }
+      if (!isLocked) {
+        closeApp();
+      }
+    }
+
+    function closeApp() {
+      currentApp = null;
+      stopWebCam();
+      clearInterval(commentsInterval);
+      document.getElementById('appContainer').classList.add('hidden');
+    }
+
+    // App Opener
+    function openApp(appId) {
+      playClickSound();
+      currentApp = appId;
+      const appContainer = document.getElementById('appContainer');
+      const appTitle = document.getElementById('appTitle');
+      const appContent = document.getElementById('appContent');
+
+      appContent.innerHTML = '';
+      appContainer.classList.remove('hidden');
+
+      switch (appId) {
+        case 'pearcam':
+          appTitle.innerText = 'PearCam';
+          renderPearCam(appContent);
+          break;
+        case 'soundboard':
+          appTitle.innerText = 'Som do Freddie';
+          renderSoundboard(appContent);
+          break;
+        case 'icarly':
+          appTitle.innerText = 'iCarly Live';
+          renderICarlyLive(appContent);
+          break;
+        case 'pearstore':
+          appTitle.innerText = 'PearStore';
+          renderPearStore(appContent);
+          break;
+        case 'settings':
+          appTitle.innerText = 'Ajustes Pear OS';
+          renderSettings(appContent);
+          break;
+      }
+      lucide.createIcons();
+    }
+    // 1. PEAR CAM
+    function renderPearCam(container) {
+      container.innerHTML = `
+        <div class="flex flex-col h-full items-center justify-between gap-2 text-xs">
+          <div class="relative w-full flex-1 bg-black rounded-2xl overflow-hidden flex items-center justify-center border border-slate-800">
+            <video id="webcamVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+            <div id="camOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center font-pear text-xl text-pink-400 drop-shadow text-center p-2"></div>
+            <div class="absolute bottom-1 left-2 bg-black/60 px-1.5 py-0.5 rounded text-[9px] font-mono text-lime-400">PearCam 4K</div>
+          </div>
+
+          <div class="w-full grid grid-cols-3 gap-1.5 text-[10px]">
+            <button onclick="setCamFilter('normal')" class="py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-center font-medium">Normal</button>
+            <button onclick="setCamFilter('mustache')" class="py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-center font-medium">🥸 Bigode</button>
+            <button onclick="setCamFilter('socks')" class="py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-center font-medium">🧦 Meias Brilhantes</button>
+          </div>
+
+          <button onclick="takePhoto()" class="w-12 h-12 rounded-full border-2 border-white bg-pink-500 hover:bg-pink-400 active:scale-95 shadow flex items-center justify-center my-0.5">
+            <i data-lucide="camera" class="w-5 h-5 text-white"></i>
+          </button>
+        </div>
+      `;
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => {
+            webCamStream = stream;
+            const video = document.getElementById('webcamVideo');
+            if (video) video.srcObject = stream;
+          })
+          .catch(() => {
+            const video = document.getElementById('webcamVideo');
+            if (video) {
+              video.parentElement.innerHTML = `<div class="text-center p-2 text-[10px] text-slate-400">Visor de Câmera PearCam<br>(Sem permissão de câmera)</div>`;
+            }
+          });
+      }
+    }
+
+    function setCamFilter(filter) {
+      playClickSound();
+      const video = document.getElementById('webcamVideo');
+      const overlay = document.getElementById('camOverlay');
+      if (!overlay) return;
+
+      if (filter === 'mustache') {
+        if(video) video.style.filter = 'sepia(0.5)';
+        overlay.innerText = '🥸 BIGODE DO SPENCER!';
+      } else if (filter === 'socks') {
+        if(video) video.style.filter = 'hue-rotate(140deg) brightness(1.2)';
+        overlay.innerText = '🧦 MEIAS LUMINOSAS!';
+      } else {
+        if(video) video.style.filter = 'none';
+        overlay.innerText = '';
+      }
+    }
+
+    function takePhoto() {
+      playClickSound();
+      alert('📸 Foto PearCam capturada e salva!');
+    }
+
+    function stopWebCam() {
+      if (webCamStream) {
+        webCamStream.getTracks().forEach(track => track.stop());
+        webCamStream = null;
+      }
+    }
+
+    // 2. SOUNDBOARD DO FREDDIE
+    function renderSoundboard(container) {
+      container.innerHTML = `
+        <div class="flex flex-col h-full justify-between gap-2 text-xs">
+          <div class="bg-purple-950/60 p-2.5 rounded-xl border border-purple-500/20 text-center">
+            <h4 class="font-pear text-sm text-lime-300">Mesa de Som do Freddie</h4>
+            <p class="text-[10px] text-slate-400">Efeitos sonoros oficiais do WebShow</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 flex-1 items-center">
+            <button onclick="playApplauseSound()" class="p-3 bg-slate-900 hover:bg-slate-800 active:bg-purple-600 rounded-xl border border-white/10 font-semibold flex flex-col items-center gap-1 transition">
+              <span class="text-xl">👏</span>
+              <span>Aplausos</span>
+            </button>
+
+            <button onclick="playAirhornSound()" class="p-3 bg-slate-900 hover:bg-slate-800 active:bg-pink-600 rounded-xl border border-white/10 font-semibold flex flex-col items-center gap-1 transition">
+              <span class="text-xl">📢</span>
+              <span>Corneta</span>
+            </button>
+
+            <button onclick="playCountdownSound()" class="p-3 bg-slate-900 hover:bg-slate-800 active:bg-amber-600 rounded-xl border border-white/10 font-semibold flex flex-col items-center gap-1 transition">
+              <span class="text-xl">⏱️</span>
+              <span>"5, 4, 3, 2..."</span>
+            </button>
+
+            <button onclick="playBooSound()" class="p-3 bg-slate-900 hover:bg-slate-800 active:bg-cyan-600 rounded-xl border border-white/10 font-semibold flex flex-col items-center gap-1 transition">
+              <span class="text-xl">👎</span>
+              <span>Vaia / Boo</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. ICARLY LIVE WEBSHOW
+    function renderICarlyLive(container) {
+      container.innerHTML = `
+        <div class="flex flex-col h-full justify-between gap-2 text-xs">
+          
+          <div class="relative w-full h-40 bg-slate-900 rounded-xl overflow-hidden border border-amber-500/30 flex flex-col items-center justify-center text-center p-2">
+            <div class="absolute top-1.5 left-2 bg-red-600 px-1.5 py-0.5 rounded font-pear text-[9px] text-white flex items-center gap-1 animate-pulse">
+              <span class="w-1.5 h-1.5 rounded-full bg-white"></span> AO VIVO
+            </div>
+            
+            <div class="my-auto flex flex-col items-center">
+              <div class="flex items-center gap-1 mb-1">
+                <span class="text-xl">👩🏻</span>
+                <span class="text-xl">👱🏼‍♀️</span>
+                <span class="text-xl">🌮</span>
+              </div>
+              <h4 class="font-pear text-xs text-amber-300">"Tacos de Meia no Sótão!"</h4>
+              <p class="text-[9px] text-slate-400">Carly & Sam ao vivo</p>
+            </div>
+
+            <!-- Live Floating Comments -->
+            <div id="liveCommentsContainer" class="absolute inset-x-2 bottom-1 h-16 overflow-hidden pointer-events-none flex flex-col justify-end gap-1"></div>
+          </div>
+
+          <div class="bg-slate-900 p-2 rounded-xl border border-slate-800 flex flex-col gap-1.5">
+            <span class="text-[10px] text-slate-400">Enviar Reação:</span>
+            <div class="grid grid-cols-3 gap-1">
+              <button onclick="sendReaction('🥛 Leite!')" class="py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px]">🥛 Leite</button>
+              <button onclick="sendReaction('⚡ GIBBY!')" class="py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px]">⚡ Gibby!</button>
+              <button onclick="sendReaction('💖 Luv!')" class="py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px]">💖 Amamos</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const sampleComments = [
+        "NoraD: Mandem oi para mim!!",
+        "NevelPapperman: iCarly vai ruir!",
+        "FreddieFan: Freddie você é lindo!",
+        "GroovySmoothie: Smoothies com desconto!",
+        "PennyTees: Camisetas novas na loja!"
+      ];
+
+      commentsInterval = setInterval(() => {
+        const randomComment = sampleComments[Math.floor(Math.random() * sampleComments.length)];
+        pushComment(randomComment);
+      }, 2000);
+    }
+
+    function pushComment(text) {
+      const container = document.getElementById('liveCommentsContainer');
+      if (!container) return;
+      const commentEl = document.createElement('div');
+      commentEl.className = 'anim-comment bg-black/80 border border-white/10 text-white text-[9px] px-2 py-0.5 rounded-full w-max max-w-full truncate';
+      commentEl.innerText = text;
+      container.appendChild(commentEl);
+      setTimeout(() => { if (commentEl.parentElement) commentEl.parentElement.removeChild(commentEl); }, 3000);
+    }
+
+    function sendReaction(text) {
+      playClickSound();
+      pushComment("Você: " + text);
+    }
+
+    // 4. PEAR STORE
+    function renderPearStore(container) {
+      container.innerHTML = `
+        <div class="flex flex-col h-full justify-between gap-2 text-xs">
+          <div class="bg-cyan-900/50 p-2 rounded-xl text-cyan-200">
+            <h4 class="font-pear text-xs">PearStore Destaques</h4>
+            <p class="text-[9px] opacity-80">Apps mais populares em Seattle</p>
+          </div>
+
+          <div class="flex-1 overflow-y-auto space-y-1.5 pr-1">
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🥤</span>
+                <div>
+                  <div class="font-bold text-[11px]">Groovy Smoothie</div>
+                  <div class="text-[9px] text-slate-400">Peça com T-Bo</div>
+                </div>
+              </div>
+              <button onclick="downloadApp(this)" class="px-2.5 py-1 bg-cyan-600 text-white text-[10px] rounded-full">Obter</button>
+            </div>
+
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🌮</span>
+                <div>
+                  <div class="font-bold text-[11px]">Sock Tacos</div>
+                  <div class="text-[9px] text-slate-400">Receitas do Spencer</div>
+                </div>
+              </div>
+              <button onclick="downloadApp(this)" class="px-2.5 py-1 bg-cyan-600 text-white text-[10px] rounded-full">Obter</button>
+            </div>
+
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🏢</span>
+                <div>
+                  <div class="font-bold text-[11px]">Bushwell Defense</div>
+                  <div class="text-[9px] text-slate-400">Jogo do Lewbert</div>
+                </div>
+              </div>
+              <button onclick="downloadApp(this)" class="px-2.5 py-1 bg-cyan-600 text-white text-[10px] rounded-full">Obter</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function downloadApp(btn) {
+      playClickSound();
+      btn.innerText = "...";
+      setTimeout(() => {
+        btn.innerText = "Instalado";
+        btn.className = "px-2.5 py-1 bg-lime-600 text-white text-[10px] rounded-full";
+      }, 1200);
+    }
+
+    // 5. AJUSTES (Cores e Temas)
+    function renderSettings(container) {
+      container.innerHTML = `
+        <div class="flex flex-col h-full justify-between gap-2 text-xs">
+          <div>
+            <h4 class="font-pear text-xs text-lime-300 mb-2">Cor da Carcaça PearPhone</h4>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="setTheme('theme-lime')" class="p-2 bg-slate-900 border border-lime-500/40 rounded-lg flex items-center gap-1.5 text-[10px]">
+                <span class="w-3 h-3 rounded-full bg-lime-500"></span>
+                <span>Verde Limão</span>
+              </button>
+              <button onclick="setTheme('theme-pink')" class="p-2 bg-slate-900 border border-pink-500/40 rounded-lg flex items-center gap-1.5 text-[10px]">
+                <span class="w-3 h-3 rounded-full bg-pink-500"></span>
+                <span>Rosa Choque</span>
+              </button>
+              <button onclick="setTheme('theme-purple')" class="p-2 bg-slate-900 border border-purple-500/40 rounded-lg flex items-center gap-1.5 text-[10px]">
+                <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                <span>Roxo Elétrico</span>
+              </button>
+              <button onclick="setTheme('theme-cyan')" class="p-2 bg-slate-900 border border-cyan-500/40 rounded-lg flex items-center gap-1.5 text-[10px]">
+                <span class="w-3 h-3 rounded-full bg-cyan-400"></span>
+                <span>Azul Ciano</span>
+              </button>
+              <button onclick="setTheme('theme-yellow')" class="p-2 bg-slate-900 border border-yellow-500/40 rounded-lg flex items-center gap-1.5 text-[10px] col-span-2">
+                <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                <span>Amarelo Pera</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 p-2 rounded-xl border border-slate-800 text-[10px] space-y-1">
+            <div class="flex justify-between"><span>Modelo:</span> <span class="text-lime-300">PearPhone Classic 1.0</span></div>
+            <div class="flex justify-between"><span>OS:</span> <span>PearOS 4.5.0</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setTheme(themeClass) {
+      playClickSound();
+      const phone = document.getElementById('pearApp');
+      phone.className = `pear-shape-container ${themeClass} transition-all duration-500`;
+    }
+  </script>
+</body>
+</html>
